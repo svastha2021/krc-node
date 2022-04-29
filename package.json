@@ -1,0 +1,30 @@
+{
+  "name": "mezzofy",
+  "version": "1.0.0",
+  "description": "Mezzofy listening",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "api-query-params": "^4.15.0",
+    "aws-sdk": "^2.853.0",
+    "aws-serverless-express": "^3.3.6",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "moment-timezone": "^0.5.31",
+    "mysql": "^2.17.1",
+    "mysql-connection-pool-manager": "^1.5.9",
+    "serverless-apigw-binary": "^0.4.4",
+    "swagger-jsdoc": "^3.5.0",
+    "swagger-ui-express": "^4.1.3",
+    "tinyurl": "^1.1.7",
+    "unix-timestamp": "^0.2.0",
+    "validator": "^13.5.2"
+  }
+}
