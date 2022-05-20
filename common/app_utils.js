@@ -41,7 +41,7 @@ exports.authValidate = function (req, res, next) {
 
 exports.GetRandomPatientID = function () {
   var text = "";	// prefix
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+  var possible = "0123456789";
   var maxchars = 6;
 
   var prefixLen = text.length;
