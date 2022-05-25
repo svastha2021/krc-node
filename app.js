@@ -381,6 +381,19 @@ app.post('/dialysisconsulting', function (req, res) {
   })
 })
 
+app.post('/labconsulting', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  consultAction.CreateLabConsulting(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
 app.get('/consult/:branch_id', function (req, res){
   event.header = req.headers;
   event.body = req.body;
@@ -427,6 +440,32 @@ app.get('/labtests', function (req, res){
   event.header = req.headers;
   event.queryParameters = aqp(req.query);
   masterAction.LabTestList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/dialysis/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  consultAction.getPatientDialysisList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/lablists/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  consultAction.getPatientLabLists(event, {
     done: function (rescode, resmsg) {
       res.header(resmsg.headers);
       res.status(resmsg.statusCode);
