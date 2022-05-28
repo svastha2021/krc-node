@@ -15,6 +15,7 @@ const { ProductAction } = require('./lib/action/product_action');
 const { BillingAction } = require('./lib/action/billing_action');
 const { MasterAction } = require('./lib/action/master_action');
 const { ConsultAction } = require('./lib/action/consulting_action');
+const {AdvancePaymentAction} = require('./lib/action/advance_payment_action');
 var debug = require('debug')('v2:app:app');
 var event = {
   stageVariables: {
@@ -31,6 +32,7 @@ var productAction = new ProductAction();
 var billingAction = new BillingAction();
 var masterAction = new MasterAction();
 var consultAction = new ConsultAction();
+var advancePaymentAction = new AdvancePaymentAction();
 
 app.post('/login', function (req, res) {
   event.headers = req.headers;
@@ -466,6 +468,22 @@ app.get('/lablists/:patient_id', function (req, res){
   event.pathParameters = req.params;
   event.queryParameters = aqp(req.query);
   consultAction.getPatientLabLists(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+
+app.post('/advancepayment', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  event.body = req.body;
+  console.log('in app');
+  advancePaymentAction.CreateAdvancePayment(event, {
     done: function (rescode, resmsg) {
       res.header(resmsg.headers);
       res.status(resmsg.statusCode);
