@@ -1,7 +1,7 @@
 {
-  "name": "mezzofy",
+  "name": "hms",
   "version": "1.0.0",
-  "description": "Mezzofy listening",
+  "description": "hms listening",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

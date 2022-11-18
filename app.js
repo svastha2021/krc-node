@@ -15,7 +15,10 @@ const { ProductAction } = require('./lib/action/product_action');
 const { BillingAction } = require('./lib/action/billing_action');
 const { MasterAction } = require('./lib/action/master_action');
 const { ConsultAction } = require('./lib/action/consulting_action');
-const {AdvancePaymentAction} = require('./lib/action/advance_payment_action');
+const { AdvancePaymentAction } = require('./lib/action/advance_payment_action');
+const { PatientInsAction } = require('./lib/action/patient_ins_action');
+const { PoAction } = require('./lib/action/po_action');
+const { SupplierAction } = require('./lib/action/supplier_action');
 var debug = require('debug')('v2:app:app');
 var event = {
   stageVariables: {
@@ -33,6 +36,9 @@ var billingAction = new BillingAction();
 var masterAction = new MasterAction();
 var consultAction = new ConsultAction();
 var advancePaymentAction = new AdvancePaymentAction();
+var patientInsAction = new PatientInsAction();
+var poAction = new PoAction();
+var supplierAction = new SupplierAction();
 
 app.post('/login', function (req, res) {
   event.headers = req.headers;
@@ -220,6 +226,49 @@ app.get('/productsorg/:org_id', function (req, res) {
   })
 })
 
+
+app.get('/prodsellingprice/:org_id/:branch_id/:product_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.GetProductSellingPrice(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/productmaster/:org_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.GetProductMasterOrgId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+
+app.get('/prodsellingprice/:product_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.GetProductMasterOrgId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
 app.get('/product/:product_id', function (req, res) {
   event.headers = req.headers;
   event.pathParameters = req.params;
@@ -233,6 +282,19 @@ app.get('/product/:product_id', function (req, res) {
   })
 })
 
+
+app.get('/supplierproductdetail/:product_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  supplierAction.GetSupplierProductpriceByProductId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
 app.post('/billing', function (req, res) {
   event.headers = req.headers;
   event.body = req.body;
@@ -287,6 +349,21 @@ app.get('/billing/:invoice_no', function (req, res){
     }
   })  
 })
+
+app.get('/billingbudetails/:invoice_no', function (req, res){
+  event.header = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.GetBillingBUDetail(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
 
 app.get('/patientheader/:patient_id', function (req, res){
   event.header = req.headers;
@@ -396,6 +473,32 @@ app.post('/labconsulting', function (req, res) {
   })
 })
 
+app.post('/pharmconsulting', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  consultAction.CreatePharmConsulting(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/healthconsulting', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  consultAction.CreateHealthConsulting(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
 app.get('/consult/:branch_id', function (req, res){
   event.header = req.headers;
   event.body = req.body;
@@ -476,6 +579,45 @@ app.get('/lablists/:patient_id', function (req, res){
   })  
 })
 
+app.get('/pharmlists/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  consultAction.getPatientPharmLists(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/previouspharma/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  consultAction.getPatientPharmaLists(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/healthlists/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  consultAction.getPatientHealthLists(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
 
 app.post('/advancepayment', function (req, res){
   event.header = req.headers;
@@ -491,5 +633,639 @@ app.post('/advancepayment', function (req, res){
     }
   })  
 })
+app.get('/vitalparams', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  event.body = req.body;
+  
+  masterAction.fetchVitalParams(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/invoicereport/:patient_id/:invoice_no', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getPatientInvoiceDetail(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.post('/patientinsurance', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.createPatientInsHeader(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/patientinsurancedetail', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.createPatientInsDetail(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/patientinslists', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.getPatientInsHeaderList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/patientinsdetail/:patient_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.getPatientInsDetailList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/insentrystatus/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.getInsentrystatus(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/invoicebymonth/:patient_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getInvoiceByMonth(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/patienttypereport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getReportPatientTypewise(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/patientoutstandingreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getReportPatientOutstanding(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/invoiceoutstandingreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getReportInvoiceOutstanding(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/collectionwisereport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getCollectionWiseReport(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/paymentwisereport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getPaymentWiseReport(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/receiptpaymentreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getReceiptPaymentReport(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/stockregisterreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getStockRegisterReport(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+app.post('/patientinsurancereport', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientInsAction.getPatientInsurancereport(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/po', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  poAction.createPo(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.post('/posubmission', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  poAction.poSubmission(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/pos/:branch_id/:supplier_id', function (req, res){
+  event.header = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoListsByBranchId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/posorg/:org_id', function (req, res){
+  event.header = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoListsByOrgId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/po/:po_number', function (req, res){
+  event.header = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoDetail(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+
+app.get('/suppliers/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  supplierAction.GetSupplierListByBranchId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/supplierproducts/:branch_id/:supplier_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  supplierAction.GetSupplierProductList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/suppliers', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  supplierAction.createSupplier(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/eodinfo/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  masterAction.GetEOD(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.post('/eod', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  masterAction.createEOD(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/supplierprods', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  supplierAction.createSupplierProd(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/branches/:org_id', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  masterAction.GetBranchList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.post('/pogoodsreceipt', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  poAction.poGoodsReceipt(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/goodreceipt/:org_id/:branch_id/:supplier_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetGoodReceiptList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/schedule', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  patientAction.CreateSchedule(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/schedules/:org_id/:branch_id/:patient_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  patientAction.GetScheduleList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/popayschedulelists/:org_id/:branch_id/:supplier_id', function (req, res) {
+
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoSuppScheduleList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createposupplierpayment', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.CreatePoSuppScheduleList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/users/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  userAction.GetUserListByBranchId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createreceiptspayments', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.CreateReceiptsPayments(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/accounts/:org_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  masterAction.GetAccountListByOrgId(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/receiptspayments/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetReceiptsPayments(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/posupplierpayments/:org_id/:branch_id/:supplier_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoSupplierPayments(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createproduct', function (req, res) { 
+  event.headers = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.CreateProduct(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/goodreceiptreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetGoodReceiptReportList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/supplierpaymentreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetSupplierPaymentReportList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.get('/poinvoicesummaryreport/:org_id/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  poAction.GetPoInvoiceSummaryReportList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createproductpricing', function (req, res) { 
+  event.headers = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.CreateProductPricing(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createproductinsurance', function (req, res) { 
+  event.headers = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.CreateProductInsurancePricing(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createuser', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+   userAction.CreateUser(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+app.post('/createdoctor', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+   doctorAction.createDoctor(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
 
 module.exports = app;
