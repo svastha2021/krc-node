@@ -1,10 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+//const { headersCors } = require('./common/header_cors');
 const cors = require('cors');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors({origin:'*'}));
+// var request = require("request");
+// 	request("https://dev1.vibhavatech.com",function(error,response,body)
+// 	{
+// 	//	console.log(body);
+//   console.log("Start");
+// 	});
+app.use(cors({
+  'Access-Control-Allow-Origin': ['https://dev1.vibhavatech.com','https://dev2.vibhavatech.com','https://vibhavatech.com', 'http://localhost:4200', 'http://localhost:4003','https://krc.vibhavatech.com']
+}));
+//app.use(cors("Access-Control-Allow-Origin", "*"));
 const aqp = require('api-query-params');
 const { UserAction } = require('./lib/action/user_action');
 const { DoctorAction } = require('./lib/action/doctor_action');
@@ -13,12 +23,15 @@ const { AppointmentAction } = require('./lib/action/appointment_action');
 const { BusinessAction } = require('./lib/action/business_action');
 const { ProductAction } = require('./lib/action/product_action');
 const { BillingAction } = require('./lib/action/billing_action');
+const { BillingTempAction } = require('./lib/action/billingtemp_action');
 const { MasterAction } = require('./lib/action/master_action');
 const { ConsultAction } = require('./lib/action/consulting_action');
 const { AdvancePaymentAction } = require('./lib/action/advance_payment_action');
 const { PatientInsAction } = require('./lib/action/patient_ins_action');
 const { PoAction } = require('./lib/action/po_action');
 const { SupplierAction } = require('./lib/action/supplier_action');
+const { InventoryAction } = require('./lib/action/inventory_action');
+const { OptholParamAction } = require('./lib/action/opthol_param_action');
 var debug = require('debug')('v2:app:app');
 var event = {
   stageVariables: {
@@ -33,12 +46,15 @@ var appointmentAction = new AppointmentAction();
 var businessAction = new BusinessAction();
 var productAction = new ProductAction();
 var billingAction = new BillingAction();
+var billingTempAction = new BillingTempAction();
 var masterAction = new MasterAction();
 var consultAction = new ConsultAction();
 var advancePaymentAction = new AdvancePaymentAction();
 var patientInsAction = new PatientInsAction();
 var poAction = new PoAction();
 var supplierAction = new SupplierAction();
+var inventoryAction = new InventoryAction();
+var optholParamAction = new OptholParamAction();
 
 app.post('/login', function (req, res) {
   event.headers = req.headers;
@@ -213,6 +229,18 @@ app.get('/products/:branch_id', function (req, res) {
   })
 })
 
+app.get('/productstemp/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  productAction.GetProducts(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
 app.get('/productsorg/:org_id', function (req, res) {
   event.headers = req.headers;
   event.pathParameters = req.params;
@@ -308,6 +336,19 @@ app.post('/billing', function (req, res) {
   })
 })
 
+app.post('/tempbilling', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  billingTempAction.CreateBilling(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
 app.get('/billings/:branch_id', function (req, res){
   event.header = req.headers;
   event.body = req.body;
@@ -384,6 +425,20 @@ app.get('/references/:ref_type', function (req, res){
   event.pathParameters = req.params;
   event.queryParameters = aqp(req.query);
   masterAction.GetReferenceList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+
+app.get('/optholparam/:org_id/:param_type', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  masterAction.GetOptholParamList(event, {
     done: function (rescode, resmsg) {
       res.header(resmsg.headers);
       res.status(resmsg.statusCode);
@@ -1106,6 +1161,19 @@ app.get('/users/:org_id/:branch_id', function (req, res) {
   })
 })
 
+app.get('/userpassword/:org_id/:branch_id/:user_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  userAction.GetUserPassword(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
 app.post('/createreceiptspayments', function (req, res) {
   event.headers = req.headers;
   event.body = req.body;
@@ -1254,6 +1322,20 @@ app.post('/createuser', function (req, res) {
     }
   })
 })
+
+
+app.post('/changepassword', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+   userAction.ChanagePassword(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
 app.post('/createdoctor', function (req, res) {
   event.headers = req.headers;
   event.body = req.body;
@@ -1267,5 +1349,129 @@ app.post('/createdoctor', function (req, res) {
   })
 })
 
+app.post('/createaccount', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  masterAction.createAccount(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createinventoryconfig', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  inventoryAction.createInventoryConfig(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+app.post('/createinventoryproduct', function (req, res) {
+  event.headers = req.headers;
+  event.body = req.body;
+  event.queryParameters = aqp(req.query);
+  inventoryAction.createInventoryProduct(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/inventoryproduct/:branch_id/:source_product_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  inventoryAction.GetInventoryProducts(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/inventoryconfig/:branch_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  inventoryAction.GetInventoryConfigs(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+
+app.get('/patientreport/:org_id/:branch_id/:patient_id', function (req, res) {
+  event.headers = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  patientAction.GetPatientReportList(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })
+})
+
+
+app.get('/doctorsummaryreport/:org_id/:branch_id', function (req, res){
+  event.header = req.headers;
+  event.body = req.body;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  billingAction.getReportDoctorSummary(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.post('/createoptholparam', function (req, res){
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  event.body = req.body;
+  optholParamAction.CreateOptholParam(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
+
+app.get('/optholparamdetail/:org_id/:branch_id', function (req, res){
+  console.log("Call optholparamdetail")
+  event.header = req.headers;
+  event.pathParameters = req.params;
+  event.queryParameters = aqp(req.query);
+  optholParamAction.GetOptholParam(event, {
+    done: function (rescode, resmsg) {
+      res.header(resmsg.headers);
+      res.status(resmsg.statusCode);
+      res.send(resmsg.body)
+    }
+  })  
+})
 
 module.exports = app;
