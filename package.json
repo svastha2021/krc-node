@@ -24,6 +24,7 @@
     "mysql": "^2.17.1",
     "mysql-connection-pool-manager": "^1.5.9",
     "nodemailer": "^6.8.0",
+    "pm2": "^5.3.0",
     "request": "^2.88.2",
     "serverless-apigw-binary": "^0.4.4",
     "swagger-jsdoc": "^3.5.0",
