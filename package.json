@@ -1,7 +1,7 @@
 {
-  "name": "mezzofy",
+  "name": "hms",
   "version": "1.0.0",
-  "description": "Mezzofy listening",
+  "description": "hms listening",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,10 +16,13 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "ejs": "^3.1.8",
     "express": "^4.17.1",
     "moment-timezone": "^0.5.31",
     "mysql": "^2.17.1",
     "mysql-connection-pool-manager": "^1.5.9",
+    "nodemailer": "^6.8.0",
+    "request": "^2.88.2",
     "serverless-apigw-binary": "^0.4.4",
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3",
